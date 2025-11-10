@@ -51,11 +51,3 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.public.id
 }
 
-# S3 Bucket
-resource "aws_s3_bucket" "app_bucket" {
-  bucket = "my-app-bucket-unique-name-123"
-
-  tags = {
-    Name = "Application Bucket"
-  }
-}

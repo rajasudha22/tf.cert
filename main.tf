@@ -17,6 +17,23 @@ resource "aws_iam_role" "ec2_s3_access" {
   })
 }
 
+resource "aws_iam_role" "ec2_s3_access" {
+  name = "ec2_s3_access_role2"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
 # IAM Policy
 resource "aws_iam_role_policy" "s3_access_policy" {
   name = "s3_access_policy"
@@ -46,7 +63,9 @@ resource "aws_iam_instance_profile" "ec2_profile" {
   name = "ec2_profile"
   role = aws_iam_role.ec2_s3_access.name
 }
-
+resource "aws_iam_instance_profile" "ec2_profile" {
+  name = "ec2_profile"
+}
 # Security Group
 resource "aws_security_group" "allow_ssh" {
   name        = "allow_ssh"
