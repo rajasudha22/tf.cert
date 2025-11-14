@@ -40,7 +40,7 @@ jobs:
           # check: CKV_AWS_1 # optional: run only a specific check_id. can be comma separated list
           # skip_check: CKV_AWS_2 # optional: skip a specific check_id. can be comma separated list
           quiet: false # optional: display only failed checks
-          soft_fail: false # optional: do not return an error code if there are failed checks
+          soft_fail: true # optional: do not return an error code if there are failed checks
           framework: terraform # optional: run only on a specific infrastructure {cloudformation,terraform,kubernetes,all}
           # skip_framework: terraform # optional: skip a specific infrastructure {cloudformation,terraform,kubernetes,all}
           # skip_cve_package: CVE_2019_8331 # optional: skip a specific CVE package in SCA scans, can be comma separated list
@@ -55,3 +55,8 @@ jobs:
           # baseline: cloudformation/.checkov.baseline # optional: Path to a generated baseline file. Will only report results not in the baseline.
           container_user: 1000 # optional: Define what UID and / or what GID to run the container under to prevent permission issues
           use_enforcement_rules: false # optional - use enforcement rule configs from the platform
+
+      - name: Upload SARIF to code scanning
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: reports/results.sarif
