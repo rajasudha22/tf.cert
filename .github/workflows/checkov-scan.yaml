@@ -44,9 +44,6 @@ jobs:
       - name: Display Checkov version
         run: checkov --version
       
-      - name: Create results directory
-        run: mkdir -p results
-      
       - name: Run Checkov scan with custom policies
         id: checkov
         run: |
@@ -55,7 +52,7 @@ jobs:
             --framework terraform \
             --output cli \
             --output json \
-            --output-file-path console,results \
+            --output-file-path console,checkov-results.json \
             --download-external-modules true \
             --compact || true
         continue-on-error: true
@@ -65,9 +62,7 @@ jobs:
         if: always()
         with:
           name: checkov-results
-          path: |
-            results/
-            results_*.json
+          path: checkov-results.json
           if-no-files-found: warn
           retention-days: 30
       
@@ -75,18 +70,18 @@ jobs:
         id: parse_results
         if: always()
         run: |
-          if [ -f "results/results_json.json" ]; then
+          if [ -f "checkov-results.json" ]; then
             # Extract summary from JSON results
-            PASSED=$(jq '.summary.passed // 0' results/results_json.json)
-            FAILED=$(jq '.summary.failed // 0' results/results_json.json)
-            SKIPPED=$(jq '.summary.skipped // 0' results/results_json.json)
+            PASSED=$(jq '.summary.passed // 0' checkov-results.json)
+            FAILED=$(jq '.summary.failed // 0' checkov-results.json)
+            SKIPPED=$(jq '.summary.skipped // 0' checkov-results.json)
             
             echo "passed=$PASSED" >> $GITHUB_OUTPUT
             echo "failed=$FAILED" >> $GITHUB_OUTPUT
             echo "skipped=$SKIPPED" >> $GITHUB_OUTPUT
             
             # Count custom policy failures
-            CUSTOM_FAILURES=$(jq '[.results.failed_checks[] | select(.check_id | startswith("CKV_AWS_CUSTOM"))] | length' results/results_json.json)
+            CUSTOM_FAILURES=$(jq '[.results.failed_checks[] | select(.check_id | startswith("CKV_AWS_CUSTOM"))] | length' checkov-results.json)
             echo "custom_failures=$CUSTOM_FAILURES" >> $GITHUB_OUTPUT
           else
             echo "passed=0" >> $GITHUB_OUTPUT
