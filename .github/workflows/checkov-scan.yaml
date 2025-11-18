@@ -12,9 +12,9 @@ on:
     branches:
       - main
       - develop
-    paths:
-      - '**.tf'
-      - 'checkov_policies/**'
+    # paths:
+    #   - '**.tf'
+    #   - 'checkov_policies/**'
   workflow_dispatch:  # Manual trigger
 
 permissions:
