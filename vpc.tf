@@ -6,7 +6,10 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
 
   tags = {
-    Name = "main-vpc"
+    Name        = "main-vpc"
+    Environment = "production"
+    Owner       = "Network Team"
+    Project     = "WebApp"
   }
 }
 
@@ -18,7 +21,10 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "public-subnet"
+    Name        = "public-subnet"
+    Environment = "production"
+    Owner       = "Network Team"
+    Project     = "WebApp"
   }
 }
 
@@ -27,7 +33,10 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "main-igw"
+    Name        = "main-igw"
+    Environment = "production"
+    Owner       = "Network Team"
+    Project     = "WebApp"
   }
 }
 
@@ -41,7 +50,10 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "public-rt"
+    Name        = "public-rt"
+    Environment = "production"
+    Owner       = "Network Team"
+    Project     = "WebApp"
   }
 }
 

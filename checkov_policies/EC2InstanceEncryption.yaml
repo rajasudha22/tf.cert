@@ -65,7 +65,7 @@ scope:
   provider: "aws"
 
 definition:
-  or:
+  and:
     - cond_type: "attribute"
       resource_types:
         - "aws_instance"

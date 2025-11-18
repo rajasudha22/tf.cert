@@ -15,23 +15,13 @@ resource "aws_iam_role" "ec2_s3_access" {
       }
     ]
   })
-}
 
-resource "aws_iam_role" "ec2_s3_access" {
-  name = "ec2_s3_access_role2"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-      }
-    ]
-  })
+  tags = {
+    Name        = "EC2 S3 Access Role"
+    Environment = "production"
+    Owner       = "DevOps Team"
+    Project     = "WebApp"
+  }
 }
 
 # IAM Policy
@@ -62,24 +52,16 @@ resource "aws_iam_role_policy" "s3_access_policy" {
 resource "aws_iam_instance_profile" "ec2_profile" {
   name = "ec2_profile"
   role = aws_iam_role.ec2_s3_access.name
-}
-resource "aws_iam_instance_profile" "ec2_profile" {
-  name = "ec2_profile"
-}
-# Security Group
-resource "aws_security_group" "allow_ssh" {
-  name        = "allow_ssh"
-  description = "Allow SSH inbound traffic"
-  vpc_id      = aws_vpc.main.id
 
-  ingress {
-    description = "SSH from anywhere"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  tags = {
+    Name        = "EC2 Instance Profile"
+    Environment = "production"
+    Owner       = "DevOps Team"
+    Project     = "WebApp"
   }
+}
 
+# Security Group
 resource "aws_security_group" "allow_ssh" {
   name        = "allow_ssh"
   description = "Allow SSH inbound traffic"
@@ -98,6 +80,13 @@ resource "aws_security_group" "allow_ssh" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name        = "SSH Security Group"
+    Environment = "production"
+    Owner       = "Security Team"
+    Project     = "WebApp"
   }
 }
 
@@ -122,6 +111,12 @@ resource "aws_instance" "app_server" {
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
   monitoring             = true
 
+  root_block_device {
+    encrypted   = true
+    volume_type = "gp3"
+    volume_size = 20
+  }
+
   metadata_options {
     http_endpoint               = "enabled"
     http_tokens                 = "required"
@@ -129,7 +124,10 @@ resource "aws_instance" "app_server" {
   }
 
   tags = {
-    Name = "AppServer"
+    Name        = "AppServer"
+    Environment = "production"
+    Owner       = "Platform Team"
+    Project     = "WebApp"
   }
 }
 
