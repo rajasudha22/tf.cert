@@ -1,0 +1,41 @@
+# Checkov configuration file for custom policies
+# This file configures Checkov to run with these custom policies
+
+# Directories to scan
+directory:
+  - ../
+
+# External checks directory
+external-checks-dir:
+  - .
+
+# Output format options: cli, json, junitxml, github_failed_only, sarif
+output: cli
+
+# Compact output (less verbose)
+compact: false
+
+# Quiet mode (only show failed checks)
+quiet: false
+
+# Soft fail mode (exit with 0 even if checks fail)
+soft-fail: false
+
+# Skip certain checks if needed (uncomment and modify as needed)
+# skip-check:
+#   - CKV_AWS_CUSTOM_001
+#   - CKV_AWS_CUSTOM_002
+#   - CKV_AWS_CUSTOM_003
+
+# Additional framework checks to run
+framework:
+  - terraform
+
+# Download external modules for scanning
+download-external-modules: true
+
+# Set severity threshold (LOW, MEDIUM, HIGH, CRITICAL)
+# check:
+#   - CKV_AWS_CUSTOM_001
+#   - CKV_AWS_CUSTOM_002
+#   - CKV_AWS_CUSTOM_003

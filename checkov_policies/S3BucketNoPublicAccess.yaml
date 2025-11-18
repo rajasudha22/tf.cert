@@ -1,0 +1,72 @@
+---
+metadata:
+  name: "Ensure S3 bucket is not publicly accessible"
+  id: "CKV_AWS_CUSTOM_001"
+  category: "ENCRYPTION"
+  severity: "CRITICAL"
+  frameworks:
+    - terraform
+    - terraform_plan
+  guideline: "S3 buckets should not be publicly accessible. Ensure ACL and bucket policies do not grant public access."
+  description: |
+    This policy ensures that S3 buckets are not configured with public access through ACLs.
+    Public S3 buckets can lead to data breaches and unauthorized access to sensitive information.
+    
+    Best Practices:
+    - Never use public-read, public-read-write, or authenticated-read ACLs
+    - Use bucket policies with specific principals instead of wildcards
+    - Enable S3 Block Public Access settings
+    - Use CloudFront with OAI for public content delivery
+    
+    Examples:
+    
+    Non-Compliant (FAIL):
+    resource "aws_s3_bucket" "bad_example" {
+      bucket = "my-public-bucket"
+      acl    = "public-read"  # FAILS - Public ACL
+    }
+    
+    Compliant (PASS):
+    resource "aws_s3_bucket" "good_example" {
+      bucket = "my-private-bucket"
+      # No ACL specified (defaults to private)
+      
+      tags = {
+        Environment = "prod"
+        Owner       = "DevOps"
+        Project     = "MyApp"
+      }
+    }
+    
+    resource "aws_s3_bucket_public_access_block" "good_example" {
+      bucket = aws_s3_bucket.good_example.id
+      
+      block_public_acls       = true
+      block_public_policy     = true
+      ignore_public_acls      = true
+      restrict_public_buckets = true
+    }
+
+scope:
+  provider: "aws"
+
+definition:
+  and:
+    - cond_type: "attribute"
+      resource_types:
+        - "aws_s3_bucket"
+      attribute: "acl"
+      operator: "not_equals"
+      value: "public-read"
+    - cond_type: "attribute"
+      resource_types:
+        - "aws_s3_bucket"
+      attribute: "acl"
+      operator: "not_equals"
+      value: "public-read-write"
+    - cond_type: "attribute"
+      resource_types:
+        - "aws_s3_bucket"
+      attribute: "acl"
+      operator: "not_equals"
+      value: "authenticated-read"

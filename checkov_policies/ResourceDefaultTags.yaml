@@ -1,0 +1,132 @@
+---
+metadata:
+  name: "Ensure resources have required default tags (Environment, Owner, Project)"
+  id: "CKV_AWS_CUSTOM_003"
+  category: "CONVENTION"
+  severity: "MEDIUM"
+  frameworks:
+    - terraform
+    - terraform_plan
+  guideline: "All AWS resources must have required default tags for proper organization and governance."
+  description: |
+    This policy ensures that AWS resources include mandatory tags for proper organization,
+    cost tracking, and governance. The required tags help identify ownership, environment,
+    and project association.
+    
+    Required Tags:
+    - Environment: Deployment environment (e.g., dev, staging, prod)
+    - Owner: Team or individual responsible for the resource
+    - Project: Project or application name
+    
+    Best Practices:
+    - Establish tagging standards across your organization
+    - Use consistent tag naming and values
+    - Automate tag enforcement with policies
+    - Include additional tags as needed (CostCenter, BusinessUnit, etc.)
+    
+    Examples:
+    
+    Non-Compliant (FAIL):
+    resource "aws_instance" "bad_example" {
+      ami           = "ami-12345678"
+      instance_type = "t2.micro"
+      
+      tags = {
+        Name = "WebServer"  # FAILS - Missing required tags
+      }
+    }
+    
+    resource "aws_s3_bucket" "bad_example" {
+      bucket = "my-bucket"
+      # FAILS - No tags defined
+    }
+    
+    Compliant (PASS):
+    resource "aws_instance" "good_example" {
+      ami           = "ami-12345678"
+      instance_type = "t2.micro"
+      
+      tags = {
+        Name        = "WebServer"
+        Environment = "production"  # Required
+        Owner       = "DevOps Team" # Required
+        Project     = "WebApp"      # Required
+      }
+    }
+    
+    resource "aws_s3_bucket" "good_example" {
+      bucket = "my-app-bucket"
+      
+      tags = {
+        Name        = "Application Bucket"
+        Environment = "production"
+        Owner       = "DevOps Team"
+        Project     = "WebApp"
+      }
+    }
+
+scope:
+  provider: "aws"
+
+definition:
+  and:
+    - cond_type: "attribute"
+      resource_types:
+        - "aws_instance"
+        - "aws_s3_bucket"
+        - "aws_vpc"
+        - "aws_subnet"
+        - "aws_security_group"
+        - "aws_db_instance"
+        - "aws_iam_role"
+        - "aws_lambda_function"
+        - "aws_ecs_cluster"
+        - "aws_eks_cluster"
+        - "aws_rds_cluster"
+        - "aws_dynamodb_table"
+        - "aws_ebs_volume"
+        - "aws_eip"
+        - "aws_lb"
+        - "aws_cloudwatch_log_group"
+      attribute: "tags.Environment"
+      operator: "exists"
+    - cond_type: "attribute"
+      resource_types:
+        - "aws_instance"
+        - "aws_s3_bucket"
+        - "aws_vpc"
+        - "aws_subnet"
+        - "aws_security_group"
+        - "aws_db_instance"
+        - "aws_iam_role"
+        - "aws_lambda_function"
+        - "aws_ecs_cluster"
+        - "aws_eks_cluster"
+        - "aws_rds_cluster"
+        - "aws_dynamodb_table"
+        - "aws_ebs_volume"
+        - "aws_eip"
+        - "aws_lb"
+        - "aws_cloudwatch_log_group"
+      attribute: "tags.Owner"
+      operator: "exists"
+    - cond_type: "attribute"
+      resource_types:
+        - "aws_instance"
+        - "aws_s3_bucket"
+        - "aws_vpc"
+        - "aws_subnet"
+        - "aws_security_group"
+        - "aws_db_instance"
+        - "aws_iam_role"
+        - "aws_lambda_function"
+        - "aws_ecs_cluster"
+        - "aws_eks_cluster"
+        - "aws_rds_cluster"
+        - "aws_dynamodb_table"
+        - "aws_ebs_volume"
+        - "aws_eip"
+        - "aws_lb"
+        - "aws_cloudwatch_log_group"
+      attribute: "tags.Project"
+      operator: "exists"
