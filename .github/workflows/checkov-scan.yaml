@@ -44,6 +44,9 @@ jobs:
       - name: Display Checkov version
         run: checkov --version
       
+      - name: Create results directory
+        run: mkdir -p results
+      
       - name: Run Checkov scan with custom policies
         id: checkov
         run: |
@@ -62,7 +65,10 @@ jobs:
         if: always()
         with:
           name: checkov-results
-          path: results/
+          path: |
+            results/
+            results_*.json
+          if-no-files-found: warn
           retention-days: 30
       
       - name: Parse Checkov results
