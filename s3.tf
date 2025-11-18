@@ -6,7 +6,7 @@ resource "aws_s3_bucket" "app_bucket" {
     Name        = "Application Bucket"
     Environment = "production"
     Owner       = "DevOps Team"
-    Project     = "WebApp"
+    # Project     = "WebApp"
   }
 }
 
