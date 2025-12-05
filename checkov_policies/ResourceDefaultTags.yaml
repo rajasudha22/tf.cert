@@ -1,6 +1,6 @@
 ---
 metadata:
-  name: "Ensure resources have required default tags (Environment, Owner, Project)"
+  name: "Ensure resources have required default tags (Environment, Owner, Project, Cost-center)"
   id: "CKV_AWS_CUSTOM_003"
   category: "CONVENTION"
   severity: "MEDIUM"
@@ -17,6 +17,7 @@ metadata:
     - Environment: Deployment environment (e.g., dev, staging, prod)
     - Owner: Team or individual responsible for the resource
     - Project: Project or application name
+    - Cost-center: Cost center code for billing purposes
     
     Best Practices:
     - Establish tagging standards across your organization
@@ -51,6 +52,7 @@ metadata:
         Environment = "production"  # Required
         Owner       = "DevOps Team" # Required
         Project     = "WebApp"      # Required
+        Cost-center = "CC1234"     # Required
       }
     }
     
@@ -62,6 +64,7 @@ metadata:
         Environment = "production"
         Owner       = "DevOps Team"
         Project     = "WebApp"
+        Cost-center = "CC1234"
       }
     }
 
@@ -88,7 +91,7 @@ definition:
         - "aws_eip"
         - "aws_lb"
         - "aws_cloudwatch_log_group"
-      attribute: "tags.Environment"
+      attribute: "tags.env"
       operator: "exists"
     - cond_type: "attribute"
       resource_types:
@@ -128,5 +131,25 @@ definition:
         - "aws_eip"
         - "aws_lb"
         - "aws_cloudwatch_log_group"
-      attribute: "tags.Project"
+      attribute: "tags.project"
+      operator: "exists"
+    - cond_type: "attribute"
+      resource_types:
+        - "aws_instance"
+        - "aws_s3_bucket"
+        - "aws_vpc"
+        - "aws_subnet"
+        - "aws_security_group"
+        - "aws_db_instance"
+        - "aws_iam_role"
+        - "aws_lambda_function"
+        - "aws_ecs_cluster"
+        - "aws_eks_cluster"
+        - "aws_rds_cluster"
+        - "aws_dynamodb_table"
+        - "aws_ebs_volume"
+        - "aws_eip"
+        - "aws_lb"
+        - "aws_cloudwatch_log_group"
+      attribute: "tags.cost-center"
       operator: "exists"
