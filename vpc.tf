@@ -7,24 +7,26 @@ resource "aws_vpc" "main" {
 
   tags = {
     Name        = "main-vpc"
-    Environment = "production"
+    env         = "production"
     Owner       = "Network Team"
-    Project     = "WebApp"
+    project     = "WebApp"
+    cost-center = "67890"
   }
 }
 
 # Public Subnet
 resource "aws_subnet" "public" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.1.0/24"
-  availability_zone       = "us-east-1a"
-  map_public_ip_on_launch = true
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = "us-east-1a"
+  # map_public_ip_on_launch = true
 
   tags = {
     Name        = "public-subnet"
-    Environment = "production"
+    env         = "production"
     Owner       = "Network Team"
-    Project     = "WebApp"
+    project     = "WebApp"
+    cost-center = "67890"
   }
 }
 
@@ -34,9 +36,10 @@ resource "aws_internet_gateway" "main" {
 
   tags = {
     Name        = "main-igw"
-    Environment = "production"
+    env         = "production"
     Owner       = "Network Team"
-    Project     = "WebApp"
+    project     = "WebApp"
+    cost-center = "67890"
   }
 }
 
