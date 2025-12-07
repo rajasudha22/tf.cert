@@ -40,15 +40,23 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 }
 
 # Security Group
-resource "aws_security_group" "allow_ssh" {
-  name        = "allow_ssh"
-  description = "Allow SSH inbound traffic"
+resource "aws_security_group" "web_server" {
+  name        = "web_server_sg"
+  description = "Allow SSH and HTTP inbound traffic for web server"
   vpc_id      = aws_vpc.main.id
 
   ingress {
     description = "SSH from anywhere"
     from_port   = 22
     to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTP from anywhere"
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -62,7 +70,7 @@ resource "aws_security_group" "allow_ssh" {
   }
 
   tags = {
-    Name        = "SSH Security Group"
+    Name        = "Web Server Security Group"
     env         = "production"
     Owner       = "Platform Team"
     project     = "WebApp"
@@ -88,7 +96,7 @@ data "aws_ami" "amazon_linux_2" {
 #   instance_type          = "t2.micro"
 #   subnet_id              = aws_subnet.public.id
 #   iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
-#   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
+#   vpc_security_group_ids = [aws_security_group.web_server.id]
 #   monitoring             = true
 
 #   root_block_device {
