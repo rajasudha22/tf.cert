@@ -6,7 +6,7 @@ resource "aws_s3_bucket" "app_bucket" {
     project     = "Datalake-v2"
     env         = "production"
     Owner       = "DevOps Team"
-    cost-center = "12345"
+    # cost-center = "12345"
   }
 }
 
