@@ -18,34 +18,11 @@ resource "aws_iam_role" "ec2_s3_access" {
 
   tags = {
     Name        = "EC2 S3 Access Role"
-    Environment = "production"
-    Owner       = "DevOps Team"
-    Project     = "WebApp"
+    env         = "production"
+    Owner       = "Devops Team"
+    project     = "WebApp"
+    cost-center = "67890"
   }
-}
-
-# IAM Policy
-resource "aws_iam_role_policy" "s3_access_policy" {
-  name = "s3_access_policy"
-  role = aws_iam_role.ec2_s3_access.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:ListBucket"
-        ]
-        Resource = [
-          aws_s3_bucket.app_bucket.arn,
-          "${aws_s3_bucket.app_bucket.arn}/*"
-        ]
-      }
-    ]
-  })
 }
 
 # IAM Instance Profile
@@ -55,16 +32,17 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 
   tags = {
     Name        = "EC2 Instance Profile"
-    Environment = "production"
-    Owner       = "DevOps Team"
-    Project     = "WebApp"
+    env         = "production"
+    Owner       = "Devops Team"
+    project     = "WebApp"
+    cost-center = "67890"
   }
 }
 
 # Security Group
-resource "aws_security_group" "allow_ssh" {
-  name        = "allow_ssh"
-  description = "Allow SSH inbound traffic"
+resource "aws_security_group" "web_server" {
+  name        = "web_server_sg"
+  description = "Allow SSH and HTTP inbound traffic for web server"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -74,8 +52,17 @@ resource "aws_security_group" "allow_ssh" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
+  ingress {
+    description = "HTTP from anywhere"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
+    description = "Egress to anywhere"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -83,10 +70,11 @@ resource "aws_security_group" "allow_ssh" {
   }
 
   tags = {
-    Name        = "SSH Security Group"
-    Environment = "production"
-    Owner       = "Security Team"
-    Project     = "WebApp"
+    Name        = "Web Server Security Group"
+    env         = "production"
+    Owner       = "Platform Team"
+    project     = "WebApp"
+    cost-center = "67890"
   }
 }
 
@@ -103,33 +91,34 @@ data "aws_ami" "amazon_linux_2" {
 }
 
 # EC2 Instance
-resource "aws_instance" "app_server" {
-  ami                    = data.aws_ami.amazon_linux_2.id
-  instance_type          = "t2.micro"
-  subnet_id              = aws_subnet.public.id
-  iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
-  vpc_security_group_ids = [aws_security_group.allow_ssh.id]
-  monitoring             = true
+# resource "aws_instance" "app_server" {
+#   ami                    = data.aws_ami.amazon_linux_2.id
+#   instance_type          = "t2.micro"
+#   subnet_id              = aws_subnet.public.id
+#   iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
+#   vpc_security_group_ids = [aws_security_group.web_server.id]
+#   monitoring             = true
 
-  root_block_device {
-    encrypted   = true
-    volume_type = "gp3"
-    volume_size = 20
-  }
+#   root_block_device {
+#     encrypted   = true
+#     volume_type = "gp3"
+#     volume_size = 20
+#   }
 
-  metadata_options {
-    http_endpoint               = "enabled"
-    http_tokens                 = "required"
-    http_put_response_hop_limit = 1
-  }
+#   metadata_options {
+#     http_endpoint               = "enabled"
+#     http_tokens                 = "required"
+#     http_put_response_hop_limit = 1
+#   }
 
-  tags = {
-    Name        = "AppServer"
-    Environment = "production"
-    Owner       = "Platform Team"
-    Project     = "WebApp"
-  }
-}
+#   tags = {
+#     Name        = "AppServer"
+#     env         = "production"
+#     Owner       = "Platform Team"
+#     project     = "WebApp"
+#     cost-center = "67890"
+#   }
+# }
 
 # Output Values
 output "instance_public_ip" {
